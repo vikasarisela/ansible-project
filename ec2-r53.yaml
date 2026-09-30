@@ -5,7 +5,7 @@
     ami_id: ami-0220d79f3f480ecf5
     sg_id: sg-078b5b6fd0b968a71
     instances:
-    - mongodb:
+    - mongodb
 
   tasks:
   - name: ec2 instance creation 
