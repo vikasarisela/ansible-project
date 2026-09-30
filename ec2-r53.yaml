@@ -5,6 +5,8 @@
     ami_id: ami-0220d79f3f480ecf5
     sg_id: sg-078b5b6fd0b968a71
     subnet_id: subnet-068965af7cdc390de
+    zoneid : Z014834733LO08D12AXOV
+    domain_name: devopslearning.fun
     instances:
     - mongodb
 
@@ -25,7 +27,17 @@
     ansible.builtin.debug:
       msg: "{{ ec2_output }}"
 
-  - name: print the ec2_output
-    ansible.builtin.debug:
-      msg: "{{ item.instances[0].public_ip_address }}"
-    loop: "{{ ec2_output.results }}"
+  # - name: print the ec2_output
+  #   ansible.builtin.debug:
+  #     msg: "{{ item.instances[0].public_ip_address }}"
+  #   loop: "{{ ec2_output.results }}"
+
+  - name: add route53 record
+  amazon.aws.route53:
+    state: present
+    zone: "{{ domain_name }}"
+    record: "{{ item.item }}.{{ domain_name }}"
+    type: A
+    ttl: 1
+    value: "{{ item.instances[0].private_ip_address}}"
+  loop: {{ ec2_output.results }}
