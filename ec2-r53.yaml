@@ -1,0 +1,28 @@
+- name: ec2 and r53 creation
+  hosts: infra
+  vars:
+    ami_id: ami-0220d79f3f480ecf5
+    sg_id: sg-078b5b6fd0b968a71
+    instances:
+    - mongodb:
+
+  tasks:
+  - name: ec2 instance creation 
+    amazon.aws.ec2_instance:
+      name: {{ item }}
+      instance_type: t3.micro
+      security_group: {{ sg_id }}
+      image_id: {{ ami_id }}
+      tags:
+        Name: {{ item }}
+    loop: "{{ instances }}"
+    register: {{ ec2_output }}
+
+  - name: print the ec2_output
+    ansible.builtin.debug:
+      msg: "{{ ec2_output }}"
+
+  - name: print the ec2_output
+    ansible.builtin.debug:
+      msg: "{{ item.instances[0].public_ip_address }}"
+    loop: "{{ ec2_output.results }}"
